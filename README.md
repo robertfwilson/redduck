@@ -1,4 +1,4 @@
-# redducc
+# redduck
 
 A package that wraps existing Python packages used to reduce and analyze optical data. 
 
