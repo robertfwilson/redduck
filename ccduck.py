@@ -19,8 +19,6 @@ except ImportError:
 
 
 
-
-
 # A quick function to get a list of files with the same prefix
 def get_file_list(fnames, directory):
     f = directory + fnames
