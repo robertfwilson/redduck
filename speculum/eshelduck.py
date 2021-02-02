@@ -15,6 +15,8 @@ import glob
 import warnings
 warnings.filterwarnings('ignore')
 
+from .utils import *
+
 
 
 
@@ -201,8 +203,6 @@ def extract_all_orders(data, peak_rows, flat, specwidth=4, edge_cut=100, do_weig
         all_spectra.append(deblazed_order)
     
     return all_spectra, x_traces, y_traces
-
-
 
 
 
