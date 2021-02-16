@@ -117,11 +117,17 @@ def correct_image(img, master_bias, master_dark, master_flat, pixel_mask, dark_e
     img_gaincorr = ccdproc.gain_correct(img_clean, gain * u.photon/u.adu)
     
     img_bsub = ccdproc.subtract_bias(img_gaincorr, master_bias)
-    img_dsub = ccdproc.subtract_dark(img_bsub, master_dark, dark_exposure=dark_exptime*u.second,data_exposure=data_exptime*u.second,scale=True)
 
-    img_corr = ccdproc.flat_correct(img_dsub, flat=master_flat)
+    if not(master_dark is None):
+        img_dsub = ccdproc.subtract_dark(img_bsub, master_dark, dark_exposure=dark_exptime*u.second,data_exposure=data_exptime*u.second,scale=True)
+    else:
+        img_dsub=img_bsub
 
- #   _, img_corr_final = detect_cosmics(img_corr.data, inmask=data_mask, cleantype='medmask', pssl=np.median(img_clean.data) )
+    if not(master_flat is None):
+        img_corr = ccdproc.flat_correct(img_dsub, flat=master_flat)
+    else:
+        img_corr = img_dsub
+
 
     return img_corr
 
@@ -183,6 +189,9 @@ def process_ccd_imgs(data_dir, img_fname, bias_fname, dark_fname, flat_fname, pi
     mflat = mk_masterflat(flat_fname, data_dir, mdark, mbias, dark_exptime=dark_exptime, gain=gain, texp_key=texp_key)
 
     sci_files = sorted(get_file_list(img_fname, data_dir) )
+
+
+    
 
 
     return 1.

@@ -24,6 +24,16 @@ from utils import *
 
 
 
+def get_order_trace(order_num, instrumnet='arces'):
+
+    orders = pd.read_csv(instrument+'/orders.txt')
+
+    center_pix = orders['center_ypix'].loc[orders['order']==order_num]
+    return float(center_pix)
+    
+
+
+
 
 
 def get_center_orders(data, top_row = 250, bottom_row = 1600, dx=10, sigma=3, peak_dist=5):
