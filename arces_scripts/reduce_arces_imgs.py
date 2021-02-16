@@ -1,4 +1,4 @@
-from sea_sea_dee import correct_all_imgs
+from redduck.sea_sea_dee import correct_all_imgs
 
 
 def run_arces_corrections(data_dir, fnames, bias_fname):
