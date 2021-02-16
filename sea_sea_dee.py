@@ -11,6 +11,8 @@ from .utils import *
 
 import ccdproc
 
+import os
+
 try:
     from astroscrappy import detect_cosmics
 except ImportError:
@@ -185,10 +187,13 @@ def correct_all_imgs(data_dir, img_fname, bias_fname, dark_fname, flat_fname, da
         print('File {0}/{1}  Processed: {2}'.format(i+1, len(sci_files), f) )
 
 
+        
     if combine_all:
+        if not os.path.exists(data_dir+'reduced'):
+            os.makedirs(data_dir+'reduced')
         print('Combining all Proceesed Images ...  ')
         combined_science_img = ccdproc.combine(corrected_img_files, unit='adu', sigma_clip=True, method='median')
-        fits.writeto(data_dir+'combined_'+img_fname[:-1]+'.fits', data=combined_science_img, header=header )
+        fits.writeto(data_dir+'reduced/combined_'+img_fname[:-1]+'.fits', data=combined_science_img, header=header )
 
         
     return 1.
