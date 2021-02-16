@@ -143,12 +143,14 @@ def correct_all_imgs(data_dir, img_fname, bias_fname, dark_fname, flat_fname, da
 
     if dark_fname is None:
         print('Skipping Master Dark Creation...')
+        mdark=None
     else:
         print('Creating Master Dark...')
         mdark = mk_masterdark(dark_fname, data_dir, mbias, gain=gain, texp_key=texp_key)
 
     if flat_fname is None:
         print('Skipping Master Flat Creation...')
+        mflat=None
     else:
         print('Creating Master Flat...')
         mflat = mk_masterflat(flat_fname, data_dir, mdark, mbias, dark_exptime=dark_exptime, gain=gain, texp_key=texp_key)
@@ -175,10 +177,10 @@ def correct_all_imgs(data_dir, img_fname, bias_fname, dark_fname, flat_fname, da
             fringe_scaled = fringe * (np.median(corr_img)/np.median(fringe))
             corr_img = corr_img - fringe_scaled
 
-        fits.writeto(data_dir+'corrected_'+img_fname+'_{0:04d}.fits'.format(i), data=corr_img, header=header )
+        fits.writeto(data_dir+'corrected_'+img_fname[:-1]+'_{0:04d}.fits'.format(i), data=corr_img, header=header )
 
         if combine_all:
-            corrected_img_files.append(data_dir+img_fname+'_{0:04d}.fits'.format(i))
+            corrected_img_files.append(data_dir+'corrected_'+img_fname[:-1]+'_{0:04d}.fits'.format(i))
 
         print('File {0}/{1}  Processed: {2}'.format(i+1, len(sci_files), f) )
 
@@ -186,8 +188,7 @@ def correct_all_imgs(data_dir, img_fname, bias_fname, dark_fname, flat_fname, da
     if combine_all:
         print('Combining all Proceesed Images ...  ')
         combined_science_img = ccdproc.combine(corrected_img_files, unit='adu', sigma_clip=True, method='median')
-        header['files']=corrected_img_files
-        fits.writeto(data_dir+'combined_'+img_fname+'.fits', data=combined_science_img, header=header )
+        fits.writeto(data_dir+'combined_'+img_fname[:-1]+'.fits', data=combined_science_img, header=header )
 
         
     return 1.
