@@ -156,7 +156,7 @@ def correct_all_imgs(data_dir, img_fname, bias_fname, dark_fname, flat_fname, da
     sci_files = sorted(get_file_list(img_fname, data_dir) )
 
     if pixel_mask==None:
-        pixel_mask = np.zeros_like(mflat.data)
+        pixel_mask = np.zeros_like(mbias.data)
 
 
     corrected_img_files = []
