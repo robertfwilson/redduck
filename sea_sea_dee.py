@@ -135,7 +135,7 @@ def correct_image(img, master_bias, master_dark, master_flat, pixel_mask, dark_e
 
 
 
-def correct_all_imgs(data_dir, img_fname, bias_fname, dark_fname, flat_fname, dark_exptime, sci_exptime, texp_key='EXPTIME', gain=1.25,pixel_mask=None, fringe_frame=None, clean_cosmicrays=False, **cosmicray_kw, combine_all=False):
+def correct_all_imgs(data_dir, img_fname, bias_fname, dark_fname, flat_fname, dark_exptime, sci_exptime, texp_key='EXPTIME', gain=1.25,pixel_mask=None, fringe_frame=None, clean_cosmicrays=False, combine_all=False, **cosmicray_kw):
 
 
     print('Creating Master Bias...')
@@ -208,9 +208,6 @@ def process_ccd_imgs(data_dir, img_fname, bias_fname, dark_fname, flat_fname, pi
     mflat = mk_masterflat(flat_fname, data_dir, mdark, mbias, dark_exptime=dark_exptime, gain=gain, texp_key=texp_key)
 
     sci_files = sorted(get_file_list(img_fname, data_dir) )
-
-
-    
 
 
     return 1.
