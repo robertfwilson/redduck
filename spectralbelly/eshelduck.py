@@ -21,15 +21,55 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils import *
 
 
+path = os.path.abspath(__file__)
+dir_path = os.path.dirname(path)
 
 
 
-def get_order_trace(order_num, instrumnet='arces'):
+class Belly:
 
-    orders = pd.read_csv(instrument+'/orders.txt')
+    def __init__(self, WaveCalSol, specimg, flatdata, orders, ):
+
+        self.WaveCalSol = WaveCalSol
+        
+
+
+def save_order(object_name, wave, flux, order_num, flat=None):
+
+    save_df = pd.DataFrame({'wave':wave, 'flux':flux, 'flat':flat})
+    
+    try:
+        save_df.to_csv(object_name+'_Spec/'+object_name+'_order{:02d}'.format(order_num)+'.txt', index=False)
+    except FileNotFoundError:
+        os.mkdir(object_name+'_Spec')
+        save_df.to_csv(object_name+'_Spec/'+object_name+'_order{:02d}'.format(order_num)+'.txt',index=False)
+    
+
+
+
+
+
+
+def get_order_ypix(order_num, instrument='arces'):
+
+    orders = pd.read_csv(dir_path+'/'+instrument+'/orders.txt')
 
     center_pix = orders['center_ypix'].loc[orders['order']==order_num]
     return float(center_pix)
+    
+
+
+
+
+def get_order_trace(masterflat, order_num, dx=2, dy=4):
+
+    order_ypix = get_order_ypix(order_num)
+    xtrace, ytrace  = trace_order(masterflat, 1000, order_ypix, dx=2, dy=4 )
+
+    ytrace_fit = fit_traced_order(xtrace,ytrace)
+
+    
+    return xtrace, ytrace_fit
     
 
 
@@ -137,9 +177,7 @@ def extract_order(spec_img, xtrace, ytrace, width=5, do_weighted_extraction=Fals
         
         spec_2d.append(spec_img[yt_lower:yt_upper,x] ) 
     
-    
-    #print(spec_2d)
-    
+        
     spec2d = np.array(spec_2d)
     
     weighted_spec = weighted_extraction(spec2d, ytrace)
