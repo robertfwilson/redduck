@@ -35,7 +35,7 @@ class Belly:
         self.WaveCal = WavelengthSolution
         self.flat = flatimg
         self.img = specimg
-        self.order=orders
+        self.orders=orders
 
 
     def _extract_spectrum(self, order):
@@ -47,13 +47,13 @@ class Belly:
          return flux
 
 
-     def _get_trace(self,order):
+    def _get_trace(self,order):
          
          xtrace, ytrace = get_order_trace(self.flat, order_num=order, dx=2, dy=4)
          return xtrace,ytrace
 
      
-     def _get_flatflux(self,order):
+    def _get_flatflux(self,order):
 
          xtrace, ytrace = get_order_trace(self.flat, order_num=order, dx=2, dy=4)
 
@@ -63,16 +63,18 @@ class Belly:
          
 
      
-     def save_spectrum(self, fname):
+    def save_spectrum(self, fname):
 
-         for o in orders:
-             flux = self._extract_spectrum()
+         for o in self.orders:
+             flux = self._extract_spectrum(o)
              wave = self.WaveCal.get_wavelengths(o,flux)
 
-             flat_flux, _ = self._get_flatflux(o)
+             flat_flux = self._get_flatflux(o)
 
 
              save_order(fname, wave=wave, flux=flux, flat=flat_flux, order_num=o)
+
+             print('{}/{} orders done'.format(o+1, max(self.orders)), end='\r' )
          
      
 
