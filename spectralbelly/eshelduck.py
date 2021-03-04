@@ -21,6 +21,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils import *
 
 
+from .duckwave import WaveCalSol
+
 path = os.path.abspath(__file__)
 dir_path = os.path.dirname(path)
 
@@ -28,9 +30,60 @@ dir_path = os.path.dirname(path)
 
 class Belly:
 
-    def __init__(self, WaveCalSol, specimg, flatdata, orders, ):
+    def __init__(self, WavelengthSolution, specimg, flatimg, orders, ):
 
-        self.WaveCalSol = WaveCalSol
+        self.WaveCal = WavelengthSolution
+        self.flat = flatimg
+        self.img = specimg
+        self.order=orders
+
+
+    def _extract_spectrum(self, order):
+
+         xtrace, ytrace = get_order_trace(self.flat, order_num=order, dx=2, dy=4)
+         flux, _ = extract_order(self.img, xtrace, ytrace, width=4.,
+                                 do_weighted_extraction=False,plot=False)
+
+         return flux
+
+
+     def _get_trace(self,order):
+         
+         xtrace, ytrace = get_order_trace(self.flat, order_num=order, dx=2, dy=4)
+         return xtrace,ytrace
+
+     
+     def _get_flatflux(self,order):
+
+         xtrace, ytrace = get_order_trace(self.flat, order_num=order, dx=2, dy=4)
+
+         flat_flux, _ = extract_order(self.flat, xtrace, ytrace, width=4.,
+                                      do_weighted_extraction=False,plot=False)
+         return flat_flux
+         
+
+     
+     def save_spectrum(self, fname):
+
+         for o in orders:
+             flux = self._extract_spectrum()
+             wave = self.WaveCal.get_wavelengths(o,flux)
+
+             flat_flux, _ = self._get_flatflux(o)
+
+
+             save_order(fname, wave=wave, flux=flux, flat=flat_flux, order_num=o)
+         
+     
+
+
+
+
+
+
+
+        
+    
         
 
 
@@ -272,5 +325,17 @@ def replace_xpix_w_refined(x,x_ref):
         min_diffs.append( x_diffs[np.argmin( np.abs(x_diffs) )] )
             
     return x - np.median(min_diffs)
+
+
+
+
+
+        
+
+        
+
+
+
+
 
 

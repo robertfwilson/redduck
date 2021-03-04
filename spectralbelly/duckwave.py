@@ -199,8 +199,6 @@ class WaveCalSol:
                 save_order('ThAr', wave=wavesave(np.arange(len(thar_spec))),
                            flux=thar_spec, flat=flat_spec, order_num=i)
                 
-            
-
         coeffs = np.array(coeffs)
         self.coeffs = coeffs
         if save:
