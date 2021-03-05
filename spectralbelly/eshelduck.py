@@ -80,10 +80,6 @@ class Belly:
 
 
 
-
-
-
-
         
     
         
