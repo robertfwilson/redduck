@@ -21,7 +21,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils import *
 
 
-from .duckwave import WaveCalSol
+#from .duckwave import WaveCalSol
 
 path = os.path.abspath(__file__)
 dir_path = os.path.dirname(path)
@@ -41,7 +41,7 @@ class Belly:
     def _extract_spectrum(self, order):
 
          xtrace, ytrace = get_order_trace(self.flat, order_num=order, dx=2, dy=4)
-         flux, _ = extract_order(self.img, xtrace, ytrace, width=4.,
+         flux = extract_order(self.img, xtrace, ytrace, width=4.,
                                  do_weighted_extraction=False,plot=False)
 
          return flux
@@ -228,17 +228,15 @@ def extract_order(spec_img, xtrace, ytrace, width=5, do_weighted_extraction=Fals
         
         spec_2d.append(spec_img[yt_lower:yt_upper,x] ) 
     
-        
     spec2d = np.array(spec_2d)
     
-    weighted_spec = weighted_extraction(spec2d, ytrace)
     unweighted_spec = np.sum(spec2d, axis=1)
         
     if plot:
         
         f, (ax1,ax2) = plt.subplots(2,1,figsize=(10,4))
         
-        m = np.median(spec_img[int(min(ytrace)-10):int(max(ytrace)+10),:]), 
+        m = np.median(spec_img[int(min(ytrace)-10):int(max(ytrace)+10),:])
         s = np.std(spec_img[int(min(ytrace)-10):int(max(ytrace)+10),:])
         
         ax1.pcolormesh(spec_img, vmin=m-s, vmax=m+3*s, cmap='Greys_r')
@@ -252,7 +250,7 @@ def extract_order(spec_img, xtrace, ytrace, width=5, do_weighted_extraction=Fals
         
         plt.show()
     
-    return np.array(unweighted_spec), np.array(weighted_spec)
+    return np.array(unweighted_spec)
         
         
 
