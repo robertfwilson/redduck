@@ -41,7 +41,7 @@ class Belly:
     def _extract_spectrum(self, order):
 
          xtrace, ytrace = get_order_trace(self.flat, order_num=order, dx=2, dy=4)
-         flux = extract_order(self.img, xtrace, ytrace, width=4.,
+         flux, _ = extract_order(self.img, xtrace, ytrace, width=4.,
                                  do_weighted_extraction=False,plot=False)
 
          return flux
@@ -95,8 +95,6 @@ def save_order(object_name, wave, flux, order_num, flat=None):
         os.mkdir(object_name+'_Spec')
         save_df.to_csv(object_name+'_Spec/'+object_name+'_order{:02d}'.format(order_num)+'.txt',index=False)
     
-
-
 
 
 
@@ -230,6 +228,7 @@ def extract_order(spec_img, xtrace, ytrace, width=5, do_weighted_extraction=Fals
     
     spec2d = np.array(spec_2d)
     
+    weighted_spec = weighted_extraction(spec2d, ytrace)
     unweighted_spec = np.sum(spec2d, axis=1)
         
     if plot:
@@ -250,7 +249,7 @@ def extract_order(spec_img, xtrace, ytrace, width=5, do_weighted_extraction=Fals
         
         plt.show()
     
-    return np.array(unweighted_spec)
+    return np.array(unweighted_spec), np.array(weighted_spec)
         
         
 
