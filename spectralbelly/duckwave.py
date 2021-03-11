@@ -173,7 +173,7 @@ class WaveCalSol:
 
 
     def from_lamps(self, master_thar, master_flat, orders, save=True, plot_extract=False,
-                   plot_calibration=True, save_spec=False):
+                   plot_calibration=True, save_spec=False, offset=0.):
 
         self.orders = orders
         coeffs = []
@@ -185,6 +185,8 @@ class WaveCalSol:
                                          plot=plot_extract)
         
             knownx, knownwave = get_thar_lines_in_order(i)
+
+            knownx += offset
             sol = calculate_wavesol(thar_spec, knownx, knownwave, i, plot=plot_calibration)
 
             coeffs.append(sol)
@@ -210,6 +212,14 @@ class WaveCalSol:
 
 
         return self
+
+
+
+    def estimate_offset(tharlamp, reference_tharlamp):
+
+
+
+        return 1.
 
 
 
