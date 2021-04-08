@@ -28,14 +28,17 @@ dir_path = os.path.dirname(path)
 
 
 
-class Belly:
+class Belly(object):
 
-    def __init__(self, WavelengthSolution, specimg, flatimg, orders, ):
+    def __init__(self, WavelengthSolution, specimg, flatimg, orders, meta=None):
 
         self.WaveCal = WavelengthSolution
         self.flat = flatimg
         self.img = specimg
         self.orders=orders
+        self.meta = meta
+
+        self.spict = {}
 
 
     def _extract_spectrum(self, order):
@@ -60,6 +63,12 @@ class Belly:
          flat_flux, _ = extract_order(self.flat, xtrace, ytrace, width=4.,
                                       do_weighted_extraction=False,plot=False)
          return flat_flux
+
+
+    def get_spectrum(self, fname):
+
+
+        return 1.
          
 
      
@@ -71,12 +80,12 @@ class Belly:
 
              flat_flux = self._get_flatflux(o)
 
-
              save_order(fname, wave=wave, flux=flux, flat=flat_flux, order_num=o)
 
              print('{}/{} orders done'.format(o+1, max(self.orders)), end='\r' )
-         
-     
+
+
+
 
 
 
