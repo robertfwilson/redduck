@@ -21,7 +21,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils import *
 
 
-#from .duckwave import WaveCalSol
+from .billocity import median_norm
 
 path = os.path.abspath(__file__)
 dir_path = os.path.dirname(path)
@@ -38,7 +38,7 @@ class Belly(object):
         self.orders=orders
         self.meta = meta
 
-        self.spict = {}
+        self.flatspec = {}
 
 
     def _extract_spectrum(self, order):
@@ -50,6 +50,16 @@ class Belly(object):
          return flux
 
 
+    def _get_norm_flux(self, order, window=255):
+
+        spec = self._extract_spectrum(order)
+        flat = self._get_flatflux(order)
+
+        return median_norm(spec/flat)
+
+        
+
+     
     def _get_trace(self,order):
          
          xtrace, ytrace = get_order_trace(self.flat, order_num=order, dx=2, dy=4)
@@ -65,7 +75,7 @@ class Belly(object):
          return flat_flux
 
 
-    def get_spectrum(self, fname):
+    def get_spectrum_from_file(self, fname):
 
 
         return 1.
@@ -79,6 +89,8 @@ class Belly(object):
              wave = self.WaveCal.get_wavelengths(o,flux)
 
              flat_flux = self._get_flatflux(o)
+
+             
 
              save_order(fname, wave=wave, flux=flux, flat=flat_flux, order_num=o)
 
