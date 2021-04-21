@@ -40,7 +40,7 @@ class Bill(object):
         midtime = Time(obstime, format='isot',scale='tai')
         barycorr = sc.radial_velocity_correction(obstime=midtime, location=earth)  
 
-        return  barycorr.to(u.km/u.s)
+        return  barycorr.to(u.km/u.s) / (u.km/u.s)
 
 
 
