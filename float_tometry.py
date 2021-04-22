@@ -14,8 +14,6 @@ from scipy.interpolate import griddata
 
 
 
-
-
 def course_coord_update(template, img, return_convolved=False, smooth=True, nsig=10):
 
     '''
@@ -280,7 +278,7 @@ def choose_best_aperture(img, x, y, radii, sig_thresh=3):
 
 
 
-def aperture_photometry(img, x, y, r, r_in=0, r_out=0, mask_max_counts=np.inf, subsky='median'):
+def aperture_photometry(img, x, y, r, r_in=0, r_out=0, mask_max_counts=np.inf, subsky='median',return_err=False,gain=1.25,read_noise=10.):
     
     '''
         img: 2d numpy array, The data to perform phorometry on
@@ -319,6 +317,16 @@ def aperture_photometry(img, x, y, r, r_in=0, r_out=0, mask_max_counts=np.inf, s
     phot_table = photutils.aperture_photometry(img, apertures, method='subpixel',
                                                    subpixels=5)
     star_flux = phot_table['aperture_sum'] - sky_bkg
+
+    
+    if return_err:
+        n_bkg = np.pi * (r_out**2. - r_in**2.)
+        n_pix = np.pi * r**2.
+        nsky = sky_bkg
+        
+        sig =  np.sqrt(star_flux + n_pix * (1+n_pix/n_bkg) * (nsky + read_noise**2.+gain**2.*0.289**2. ) )
+
+        return star_flux, sig
     
     return star_flux
 
@@ -394,15 +402,18 @@ def recursive_nan_replace(arr):
 
     
     
-
+def mad(x):
+    return np.median(np.abs(x- np.median(x)))*1.4826
 
 
     
 
-def do_apphot(img_files, x, y, r, r_in, r_out, outfile, bw=30, airmass_key='AIRMASS', t_key='DATE-OBS', texp_key='EXPTIME', plot_coords=True, plot_all_coords=False, coord_kernel_size=3, update_centroids='fine', clean_crs=False, subsky=True, frame_int=(-9,-5) ):
+def do_apphot(img_files, x, y, r, r_in, r_out, outfile, bw=30, airmass_key='AIRMASS', t_key='DATE-OBS', texp_key='EXPTIME', plot_coords=True, plot_all_coords=False, coord_kernel_size=3, update_centroids='fine', clean_crs=False, subsky=True, frame_int=(-9,-5),return_err=False,read_noise=13., gain=1.25 ):
 
-
-    phot_dicts = [{'x{}'.format(i):[], 'y{}'.format(i):[], 'flux{}'.format(i):[]} for i in range(len(x)) ]
+    if return_err:
+        phot_dicts = [{'x{}'.format(i):[], 'y{}'.format(i):[], 'flux{}'.format(i):[],'flux_err{}'.format(i):[]} for i in range(len(x)) ]
+    else:
+        phot_dicts = [{'x{}'.format(i):[], 'y{}'.format(i):[], 'flux{}'.format(i):[]} for i in range(len(x)) ]
     
     time = []
     airmass = []
@@ -453,7 +464,14 @@ def do_apphot(img_files, x, y, r, r_in, r_out, outfile, bw=30, airmass_key='AIRM
                 y_guess[i] = y_update
 
             
-        flux = aperture_photometry(img, x_guess, y_guess, r, r_in, r_out, mask_max_counts=65653, subsky=subsky)
+
+        if return_err:
+
+            flux, flux_err = aperture_photometry(img, x_guess, y_guess, r, r_in, r_out, mask_max_counts=65653, subsky=subsky, return_err=return_err, read_noise=read_noise,gain=gain)
+            [dic['flux_err{}'.format(i)].append(flux_err[i]) for i,dic in enumerate(phot_dicts)]
+
+        else:
+            flux  = aperture_photometry(img, x_guess, y_guess, r, r_in, r_out, mask_max_counts=65653, subsky=subsky, return_err=return_err, read_noise=read_noise,gain=gain)
 
 
         [dic['flux{}'.format(i)].append(flux[i]) for i,dic in enumerate(phot_dicts)]
