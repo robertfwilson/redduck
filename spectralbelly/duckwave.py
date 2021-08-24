@@ -44,9 +44,11 @@ def refine_peaks(xpix, flux, xcens, window_width=3., mode='gauss'):
         
         x = xpix[np.abs(xpix-x0) <= window_width]
         y = flux[np.abs(xpix-x0) <= window_width]
+
+        
     
         if mode=='gauss':
-            model = modeling.models.Gaussian1D(mean=x0, amplitude=np.max(y),stddev=1.5,
+            model = modeling.models.Gaussian1D(mean=x[np.argmax(y)], amplitude=np.max(y),stddev=1.5,
                                                bounds={'mean': (min(x), max(x)), 'stddev':(0.25,1.5)},
                                               )
             model.cov_matrix=True
@@ -65,7 +67,11 @@ def refine_peaks(xpix, flux, xcens, window_width=3., mode='gauss'):
                 plt.axvline(x0_refined)
                 plt.show()
                 
+                
                 bad_indices.append(i)
+                
+            if np.abs(x[np.argmax(y)]-x0_refined)>1:
+                print('WARNING: GAUSSIAN CENTER MORE THAN ONE PIXEL FROM MAX VALUE')
                 
         
         refined_xcens.append(x0_refined)
@@ -83,6 +89,7 @@ def calculate_wavesol(thar_spec, knownx, waves,order_num, plot=True,):
 
     refined_x, _, _ = refine_peaks(np.arange(len(thar_spec) ), thar_spec, knownx)
 
+    print('order {:} avg offset: {:.1f} pixels'.format(order_num,np.mean(refined_x-knownx) ) )
 
     if len(refined_x)<7:
         polydegree=3

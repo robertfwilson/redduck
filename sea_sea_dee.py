@@ -136,7 +136,7 @@ def correct_image(img, master_bias, master_dark, master_flat, pixel_mask, dark_e
 
 
 
-def correct_all_imgs(data_dir, img_fname, bias_fname, dark_fname, flat_fname, dark_exptime, sci_exptime, texp_key='EXPTIME', gain=1.25,pixel_mask=None, fringe_frame=None, clean_cosmicrays=False, combine_all=False, **cosmicray_kw):
+def correct_all_imgs(data_dir, img_fname, bias_fname, dark_fname, flat_fname, dark_exptime, sci_exptime, texp_key='EXPTIME', gain=1.25,pixel_mask=None, fringe_frame=None, clean_cosmicrays=False,overwrite=False, combine_all=False, **cosmicray_kw):
 
 
     print('Creating Master Bias...')
@@ -178,10 +178,10 @@ def correct_all_imgs(data_dir, img_fname, bias_fname, dark_fname, flat_fname, da
             fringe_scaled = fringe * (np.median(corr_img)/np.median(fringe))
             corr_img = corr_img - fringe_scaled
 
-        fits.writeto(data_dir+'corrected_'+img_fname[:-1]+'_{0:04d}.fits'.format(i), data=corr_img, header=header )
+        fits.writeto(data_dir+'corrected_'+img_fname[:-1]+'_{0:04d}.fits'.format(i), data=corr_img, header=header, overwrite=overwrite )
 
-        if combine_all:
-            corrected_img_files.append(data_dir+'corrected_'+img_fname[:-1]+'_{0:04d}.fits'.format(i))
+        #if combine_all:
+        corrected_img_files.append(data_dir+'corrected_'+img_fname[:-1]+'_{0:04d}.fits'.format(i))
 
         print('File {0}/{1}  Processed: {2}'.format(i+1, len(sci_files), f) )
 
@@ -195,7 +195,7 @@ def correct_all_imgs(data_dir, img_fname, bias_fname, dark_fname, flat_fname, da
         fits.writeto(data_dir+'reduced/combined_'+img_fname[:-1]+'.fits', data=combined_science_img, header=header )
 
         
-    return 1.
+    return corrected_img_files
 
 
 
